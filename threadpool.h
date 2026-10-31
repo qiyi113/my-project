@@ -9,6 +9,7 @@
 #include<atomic>
 #include<mutex>
 #include<condition_variable>
+#include<functional>
 
 enum class PoolMode {
 	MODE_FIXED, // 固定线程数模式
@@ -22,7 +23,14 @@ public:
 
 class Thread {
 public:
+	using ThreadFunc = std::function<void()>; // 线程执行函数类型
+
+	Thread(ThreadFunc func);
+	~Thread();
+
+	void start(); // 启动线程
 private:
+	ThreadFunc Func; // 线程执行函数
 };
 
 class ThreadPool {
@@ -30,13 +38,17 @@ public:
 	ThreadPool();
 	~ThreadPool();
 
-	void start(); // 启动线程池
+	void start(int init = 4); // 启动线程池
 	void setMode(PoolMode mode); // 设置线程池模式
 	void settaskQueueMaxSize(int maxSize); // 设置任务队列的最大容量
 	void submitTask(std::shared_ptr<Task> task); // 添加任务到任务队列
 
 	ThreadPool(const ThreadPool&) = delete; // 禁止拷贝构造函数
 	ThreadPool& operator=(const ThreadPool&) = delete; // 禁止拷贝赋值运算符
+
+private:
+	void threadFunc(); // 线程执行函数
+
 private:
 	std::vector<Thread*> threads; // 线程池中的线程列表
 	int initThreadSize; // 初始线程数
