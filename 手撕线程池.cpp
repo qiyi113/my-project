@@ -1,8 +1,5 @@
 ﻿#include"threadpool.h"
 
-#include<chrono>
-#include<thread>
-
 int main() {
 	ThreadPool pool;
 	pool.start();

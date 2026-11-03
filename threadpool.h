@@ -10,6 +10,8 @@
 #include<mutex>
 #include<condition_variable>
 #include<functional>
+#include<chrono>
+#include<thread>
 
 enum class PoolMode {
 	MODE_FIXED, // 固定线程数模式
@@ -50,7 +52,7 @@ private:
 	void threadFunc(); // 线程执行函数
 
 private:
-	std::vector<Thread*> threads; // 线程池中的线程列表
+	std::vector<std::unique_ptr<Thread>> threads; // 线程池中的线程列表
 	int initThreadSize; // 初始线程数
 
 	std::queue<std::shared_ptr<Task>> taskQueue; // 任务队列
@@ -58,8 +60,8 @@ private:
 	int maxTaskSize; // 任务队列的最大容量
 
 	std::mutex taskQueueMutex; // 任务队列的互斥锁
-	std::condition_variable taskQueueNotEmpty; // 任务队列非空条件变量
-	std::condition_variable taskQueueNotFull; // 任务队列非满条件变量
+	std::condition_variable notEmpty; // 任务队列非空条件变量
+	std::condition_variable notFull; // 任务队列非满条件变量
 
 	PoolMode poolmode; // 当前线程池模式
 };
