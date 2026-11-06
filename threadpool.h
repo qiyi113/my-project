@@ -26,6 +26,44 @@ public:
 pool.submitTask(std::make_shared<MyTask>());
 */
 
+// Any类型：可以接收任意类型的数据
+class Any {
+public:
+	Any() = default;
+	~Any() = default;
+
+	Any(const Any&) = delete;
+	Any& operator=(const Any&) = delete;
+	Any(Any&&) = default;
+	Any& operator=(Any&&) = default;
+
+	template <typename T>
+	Any(T data) : base(std::make_unique<Derive<T>>(data)) {}
+
+	template <typename T>
+	T cast() {
+		Derive<T>* pd = dynamic_cast<Derive<T>*>(base.get());
+		if (pd == nullptr) {
+			throw "类型不匹配";
+		}
+		return pd->Data;
+	} 
+
+	class Base { // 基类
+	public:
+		virtual ~Base() = default;
+	};
+
+	template <typename T>
+	class Derive : public Base { // 派生类
+	public:
+		Derive(T data) : Data(data) {}
+		T Data;
+	};
+private:
+	std::unique_ptr<Base> base; // 基类指针
+};
+
 
 
 enum class PoolMode {
@@ -35,7 +73,7 @@ enum class PoolMode {
 
 class Task { // 用户自定义任务类型，从Task类继承并实现重写的run()方法
 public:
-	virtual void run() = 0; // 纯虚函数，子类必须实现
+	virtual Any run() = 0; // 纯虚函数，子类必须实现
 };
 
 class Thread {

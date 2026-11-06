@@ -7,7 +7,7 @@ public:
 		: begin(b)
 		, end(e)
 	{}
-	void run() { // 1. 如何返回任意类型？
+	Any run() { // 1. 如何返回任意类型？
 		std::cout << "id:" << std::this_thread::get_id() << "begin!" << std::endl;
 		/*std::this_thread::sleep_for(std::chrono::seconds(2));*/
 
