@@ -2,7 +2,7 @@
 
 #include<iostream>
 
-const int MAX_TASK_QUEUE = 1024;
+const int MAX_TASK_QUEUE = 4;
 
 ThreadPool::ThreadPool()
 	: initThreadSize(0)
@@ -76,10 +76,16 @@ void ThreadPool::threadFunc() // 线程池所有线程，从任务队列消费任务
 			// 等待notEmpty条件
 			notEmpty.wait(lock, [&]()->bool {return taskQueue.size() > 0; });
 
+			std::cout << "id:" << std::this_thread::get_id()
+				<< "尝试获取任务..." << std::endl;
+	
 			// 从任务队列中取出一个任务
 			task = taskQueue.front();
 			taskQueue.pop();
 			taskSize--;
+
+			std::cout << "id:" << std::this_thread::get_id()
+				<< "获取任务成功..." << std::endl;
 
 			// 取完后依旧有剩余任务
 			if (taskQueue.size() > 0) { notEmpty.notify_all(); }

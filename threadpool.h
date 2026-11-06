@@ -13,6 +13,21 @@
 #include<chrono>
 #include<thread>
 
+/*
+example:
+ThreadPool pool;
+pool.start(4);
+
+class MyTask : public Task{
+public:
+	void run() {}
+};
+
+pool.submitTask(std::make_shared<MyTask>());
+*/
+
+
+
 enum class PoolMode {
 	MODE_FIXED, // 固定线程数模式
 	MODE_CACHED, // 缓存线程数模式(可动态增长)
