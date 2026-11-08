@@ -64,7 +64,29 @@ private:
 	std::unique_ptr<Base> base; // 基类指针
 };
 
+class Semphore {
+public:
+	Semphore(int limit = 0) : resLimit(limit) {}
+	~Semphore() = default;
 
+	void wait() { // 获取信号量资源
+		std::unique_lock<std::mutex> lock(mtx);
+
+		cv.wait(lock, [&]() { return resLimit > 0; }); // 等待条件变量，直到资源可用
+		resLimit--;
+	}
+
+	void post() { // 增加信号量资源
+		std::unique_lock<std::mutex> lock(mtx);
+		resLimit++;
+		cv.notify_all();
+	}
+private:
+	std::mutex mtx; // 互斥锁
+	std::condition_variable cv; // 条件变量
+	int resLimit;
+
+};
 
 enum class PoolMode {
 	MODE_FIXED, // 固定线程数模式
